@@ -60,14 +60,15 @@ namespace N2SMap_Viewer
             {
                 console.WrapLine("Loading map from XML...");
                 var doc = new XmlDocument();
-                doc.LoadXml(InputFile);
-                jsonText = JsonConvert.SerializeXmlNode(doc);
+                doc.LoadXml(File.ReadAllText(InputFile));
+                jsonText = JsonConvert.SerializeXmlNode(doc.FirstChild);
             }
             else
             {
                 console.WrapLine("Loading map from JSON...");
                 jsonText = File.ReadAllText(InputFile);
             }
+
 
             var deserialized = JsonConvert.DeserializeObject<MapT>(jsonText);
             deserialized.GameVersion += ":N2SMap_Viewer";

@@ -27,7 +27,7 @@ namespace N2SMap_Viewer
         [Option]
         [Description("Run silently with no required input.")]
         public bool Silent { set; get; }
-        
+
         [Option]
         [Description("Use XML instead of JSON.")]
         public bool Xml { set; get; }
@@ -36,8 +36,6 @@ namespace N2SMap_Viewer
         [CommandHandler]
         public void Handler(IConsoleAdapter console, IErrorAdapter error)
         {
-
-
             if (!Silent)
             {
                 if (!File.Exists(InputFile))
@@ -46,7 +44,15 @@ namespace N2SMap_Viewer
                     return;
                 }
 
-                if (File.Exists($"{OutputFile}.json"))
+
+                if (File.Exists($"{OutputFile}.xml") && Xml)
+                {
+                    if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
+                    {
+                        return;
+                    }
+                }
+                else if (File.Exists($"{OutputFile}.json") && !Xml)
                 {
                     if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
                     {
@@ -90,32 +96,24 @@ namespace N2SMap_Viewer
             var data = N2S.FileFormat.Map.GetRootAsMap(bb).UnPack();
 
 
-
-         
-                console.WrapLine("Serialized into JSON...");
-                string output = JsonConvert.SerializeObject(data, Formatting.Indented);
+            console.WrapLine("Serialized into JSON...");
+            string output = JsonConvert.SerializeObject(data, Formatting.Indented);
 
 
+            if (Xml)
+            {
+                console.WrapLine("Converting into XML");
+                XmlDocument xmlDocument = (XmlDocument) JsonConvert.DeserializeXmlNode(output, "Map");
 
-                if (Xml)
-                {
-                    console.WrapLine("Converting into XML");
-                    XmlDocument xmlDocument = (XmlDocument) JsonConvert.DeserializeXmlNode(output);
+                xmlDocument.Save($"{OutputFile}.xml");
 
-                    xmlDocument.Save($"{OutputFile}.xml");
-                    
-                    console.WrapLine($"Complete! File written to {OutputFile}.xml");
-                }
-                else
-                {
-                    File.WriteAllText($"{OutputFile}.json", output);
-                    console.WrapLine($"Complete! File written to {OutputFile}.json");
-                }
-
-
-
-
-
+                console.WrapLine($"Complete! File written to {OutputFile}.xml");
+            }
+            else
+            {
+                File.WriteAllText($"{OutputFile}.json", output);
+                console.WrapLine($"Complete! File written to {OutputFile}.json");
+            }
         }
     }
 }
