@@ -1,0 +1,5 @@
+C:\Users\lukas\RiderProjects\N2SMap Viewer\FlatBuffers\bin\Release\FlatBuffers.dll
+C:\Users\lukas\RiderProjects\N2SMap Viewer\FlatBuffers\bin\Release\FlatBuffers.pdb
+C:\Users\lukas\RiderProjects\N2SMap Viewer\FlatBuffers\obj\Release\FlatBuffers.csprojAssemblyReference.cache
+C:\Users\lukas\RiderProjects\N2SMap Viewer\FlatBuffers\obj\Release\FlatBuffers.dll
+C:\Users\lukas\RiderProjects\N2SMap Viewer\FlatBuffers\obj\Release\FlatBuffers.pdb
