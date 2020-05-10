@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Xml;
 using ConsoleToolkit.CommandLineInterpretation.ConfigurationAttributes;
 using ConsoleToolkit.ConsoleIO;
 using FlatBuffers;
 using Newtonsoft.Json;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace N2SMap_Viewer
 {
@@ -24,23 +26,32 @@ namespace N2SMap_Viewer
 
         [Option]
         [Description("Run silently with no required input.")]
-        public bool silent { set; get; }
+        public bool Silent { set; get; }
+        
+        [Option]
+        [Description("Use XML instead of JSON.")]
+        public bool Xml { set; get; }
 
 
         [CommandHandler]
         public void Handler(IConsoleAdapter console, IErrorAdapter error)
         {
-            if (!File.Exists(InputFile))
-            {
-                console.WrapLine("Input map file does not exist...".Red());
-                return;
-            }
 
-            if (File.Exists($"{OutputFile}.json"))
+
+            if (!Silent)
             {
-                if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
+                if (!File.Exists(InputFile))
                 {
+                    console.WrapLine("Input map file does not exist...".Red());
                     return;
+                }
+
+                if (File.Exists($"{OutputFile}.json"))
+                {
+                    if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -78,11 +89,33 @@ namespace N2SMap_Viewer
             console.WrapLine("Unpacking map...");
             var data = N2S.FileFormat.Map.GetRootAsMap(bb).UnPack();
 
-            console.WriteLine("Serialized into JSON...");
-            string output = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-            File.WriteAllText($"{OutputFile}.json", output);
-            console.WrapLine($"Complete! File written to {OutputFile}.json");
+
+         
+                console.WrapLine("Serialized into JSON...");
+                string output = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+
+
+                if (Xml)
+                {
+                    console.WrapLine("Converting into XML");
+                    XmlDocument xmlDocument = (XmlDocument) JsonConvert.DeserializeXmlNode(output);
+
+                    xmlDocument.Save($"{OutputFile}.xml");
+                    
+                    console.WrapLine($"Complete! File written to {OutputFile}.xml");
+                }
+                else
+                {
+                    File.WriteAllText($"{OutputFile}.json", output);
+                    console.WrapLine($"Complete! File written to {OutputFile}.json");
+                }
+
+
+
+
+
         }
     }
 }

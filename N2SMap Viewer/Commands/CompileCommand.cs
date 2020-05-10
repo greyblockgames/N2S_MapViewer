@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Mime;
+using System.Xml;
 using ConsoleToolkit.CommandLineInterpretation.ConfigurationAttributes;
 using ConsoleToolkit.ConsoleIO;
 using FlatBuffers;
@@ -25,28 +26,50 @@ namespace N2SMap_Viewer
         [Description("The name of the map to be output.")]
         public string OutputFile { set; get; }
 
+        [Option]
+        [Description("Run silently with no required input.")]
+        public bool Silent { set; get; }
+
+        [Option]
+        [Description("Use XML instead of JSON.")]
+        public bool Xml { set; get; }
+
 
         [CommandHandler]
         public void Handler(IConsoleAdapter console, IErrorAdapter error)
         {
-            if (!File.Exists(InputFile))
+            if (!Silent)
             {
-                console.WrapLine("Input map file does not exist...".Red());
-                return;
-            }
-
-            if (File.Exists($"{OutputFile}.N2SMAP"))
-            {
-                if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
+                if (!File.Exists(InputFile))
                 {
+                    console.WrapLine("Input map file does not exist...".Red());
                     return;
+                }
+
+                if (File.Exists($"{OutputFile}.N2SMAP"))
+                {
+                    if (!console.Confirm("Output file exists... Would you like to overwrite it?".Red()))
+                    {
+                        return;
+                    }
                 }
             }
 
+            string jsonText;
+            if (Xml)
+            {
+                console.WrapLine("Loading map from XML...");
+                var doc = new XmlDocument();
+                doc.LoadXml(InputFile);
+                jsonText = JsonConvert.SerializeXmlNode(doc);
+            }
+            else
+            {
+                console.WrapLine("Loading map from JSON...");
+                jsonText = File.ReadAllText(InputFile);
+            }
 
-            console.WrapLine("Deserializing map from JSON...");
-            var deserialized = JsonConvert.DeserializeObject<MapT>(File.ReadAllText(InputFile));
-
+            var deserialized = JsonConvert.DeserializeObject<MapT>(jsonText);
             deserialized.GameVersion += ":N2SMap_Viewer";
 
             var fb = new FlatBufferBuilder(1);
@@ -55,9 +78,6 @@ namespace N2SMap_Viewer
             fb.Finish(N2S.FileFormat.Map.Pack(fb, deserialized).Value);
 
 
-            
-            
-            
             var buf = fb.SizedByteArray();
 
             using (var outputStream = new MemoryStream())
