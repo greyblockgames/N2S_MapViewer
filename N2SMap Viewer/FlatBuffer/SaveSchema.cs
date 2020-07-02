@@ -9,20 +9,116 @@ using global::System;
 using global::System.Collections.Generic;
 using global::FlatBuffers;
 
-[System.FlagsAttribute]
-public enum TileFlag : byte
-{
-  None = 1,
-  Ground = 2,
-  Solid = 4,
-  Hole = 16,
-};
-
 public enum EntityType : short
 {
   Checkpoint = 0,
   Enemy = 1,
 };
+
+[System.FlagsAttribute]
+public enum MapFlags : byte
+{
+  None = 1,
+  Ground = 2,
+  Solid = 4,
+  Hole = 8,
+};
+
+public struct Vec2Int : IFlatbufferObject
+{
+  private Struct __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Struct(_i, _bb); }
+  public Vec2Int __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public int X { get { return __p.bb.GetInt(__p.bb_pos + 0); } }
+  public int Y { get { return __p.bb.GetInt(__p.bb_pos + 4); } }
+
+  public static Offset<N2S.FileFormat.Vec2Int> CreateVec2Int(FlatBufferBuilder builder, int X, int Y) {
+    builder.Prep(4, 8);
+    builder.PutInt(Y);
+    builder.PutInt(X);
+    return new Offset<N2S.FileFormat.Vec2Int>(builder.Offset);
+  }
+  public Vec2IntT UnPack() {
+    var _o = new Vec2IntT();
+    this.UnPackTo(_o);
+    return _o;
+  }
+  public void UnPackTo(Vec2IntT _o) {
+    _o.X = this.X;
+    _o.Y = this.Y;
+  }
+  public static Offset<N2S.FileFormat.Vec2Int> Pack(FlatBufferBuilder builder, Vec2IntT _o) {
+    if (_o == null) return default(Offset<N2S.FileFormat.Vec2Int>);
+    return CreateVec2Int(
+      builder,
+      _o.X,
+      _o.Y);
+  }
+};
+
+public class Vec2IntT
+{
+  public int X { get; set; }
+  public int Y { get; set; }
+
+  public Vec2IntT() {
+    this.X = 0;
+    this.Y = 0;
+  }
+}
+
+public struct Vec3Int : IFlatbufferObject
+{
+  private Struct __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Struct(_i, _bb); }
+  public Vec3Int __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public int X { get { return __p.bb.GetInt(__p.bb_pos + 0); } }
+  public int Y { get { return __p.bb.GetInt(__p.bb_pos + 4); } }
+  public int Z { get { return __p.bb.GetInt(__p.bb_pos + 8); } }
+
+  public static Offset<N2S.FileFormat.Vec3Int> CreateVec3Int(FlatBufferBuilder builder, int X, int Y, int Z) {
+    builder.Prep(4, 12);
+    builder.PutInt(Z);
+    builder.PutInt(Y);
+    builder.PutInt(X);
+    return new Offset<N2S.FileFormat.Vec3Int>(builder.Offset);
+  }
+  public Vec3IntT UnPack() {
+    var _o = new Vec3IntT();
+    this.UnPackTo(_o);
+    return _o;
+  }
+  public void UnPackTo(Vec3IntT _o) {
+    _o.X = this.X;
+    _o.Y = this.Y;
+    _o.Z = this.Z;
+  }
+  public static Offset<N2S.FileFormat.Vec3Int> Pack(FlatBufferBuilder builder, Vec3IntT _o) {
+    if (_o == null) return default(Offset<N2S.FileFormat.Vec3Int>);
+    return CreateVec3Int(
+      builder,
+      _o.X,
+      _o.Y,
+      _o.Z);
+  }
+};
+
+public class Vec3IntT
+{
+  public int X { get; set; }
+  public int Y { get; set; }
+  public int Z { get; set; }
+
+  public Vec3IntT() {
+    this.X = 0;
+    this.Y = 0;
+    this.Z = 0;
+  }
+}
 
 public struct TileData : IFlatbufferObject
 {
@@ -34,14 +130,12 @@ public struct TileData : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public TileData __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public N2S.FileFormat.Vec2? Pos { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.Vec2?)(new N2S.FileFormat.Vec2()).__assign(o + __p.bb_pos, __p.bb) : null; } }
-  public ushort TileSprite { get { int o = __p.__offset(6); return o != 0 ? __p.bb.GetUshort(o + __p.bb_pos) : (ushort)0; } }
-  public N2S.FileFormat.TileFlag TileFlags { get { int o = __p.__offset(8); return o != 0 ? (N2S.FileFormat.TileFlag)__p.bb.Get(o + __p.bb_pos) : 0; } }
+  public N2S.FileFormat.Vec2Int? Pos { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.Vec2Int?)(new N2S.FileFormat.Vec2Int()).__assign(o + __p.bb_pos, __p.bb) : null; } }
+  public uint TileId { get { int o = __p.__offset(6); return o != 0 ? __p.bb.GetUint(o + __p.bb_pos) : (uint)0; } }
 
-  public static void StartTileData(FlatBufferBuilder builder) { builder.StartTable(3); }
-  public static void AddPos(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2> posOffset) { builder.AddStruct(0, posOffset.Value, 0); }
-  public static void AddTileSprite(FlatBufferBuilder builder, ushort tileSprite) { builder.AddUshort(1, tileSprite, 0); }
-  public static void AddTileFlags(FlatBufferBuilder builder, N2S.FileFormat.TileFlag tileFlags) { builder.AddByte(2, (byte)tileFlags, 0); }
+  public static void StartTileData(FlatBufferBuilder builder) { builder.StartTable(2); }
+  public static void AddPos(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2Int> posOffset) { builder.AddStruct(0, posOffset.Value, 0); }
+  public static void AddTileId(FlatBufferBuilder builder, uint tileId) { builder.AddUint(1, tileId, 0); }
   public static Offset<N2S.FileFormat.TileData> EndTileData(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<N2S.FileFormat.TileData>(o);
@@ -53,29 +147,25 @@ public struct TileData : IFlatbufferObject
   }
   public void UnPackTo(TileDataT _o) {
     _o.Pos = this.Pos.HasValue ? this.Pos.Value.UnPack() : null;
-    _o.TileSprite = this.TileSprite;
-    _o.TileFlags = this.TileFlags;
+    _o.TileId = this.TileId;
   }
   public static Offset<N2S.FileFormat.TileData> Pack(FlatBufferBuilder builder, TileDataT _o) {
     if (_o == null) return default(Offset<N2S.FileFormat.TileData>);
     StartTileData(builder);
-    AddPos(builder, N2S.FileFormat.Vec2.Pack(builder, _o.Pos));
-    AddTileSprite(builder, _o.TileSprite);
-    AddTileFlags(builder, _o.TileFlags);
+    AddPos(builder, N2S.FileFormat.Vec2Int.Pack(builder, _o.Pos));
+    AddTileId(builder, _o.TileId);
     return EndTileData(builder);
   }
 };
 
 public class TileDataT
 {
-  public N2S.FileFormat.Vec2T Pos { get; set; }
-  public ushort TileSprite { get; set; }
-  public N2S.FileFormat.TileFlag TileFlags { get; set; }
+  public N2S.FileFormat.Vec2IntT Pos { get; set; }
+  public uint TileId { get; set; }
 
   public TileDataT() {
-    this.Pos = new N2S.FileFormat.Vec2T();
-    this.TileSprite = 0;
-    this.TileFlags = 0;
+    this.Pos = new N2S.FileFormat.Vec2IntT();
+    this.TileId = 0;
   }
 }
 
@@ -89,12 +179,21 @@ public struct TilemapData : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public TilemapData __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public N2S.FileFormat.Vec2? Pos { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.Vec2?)(new N2S.FileFormat.Vec2()).__assign(o + __p.bb_pos, __p.bb) : null; } }
+  public N2S.FileFormat.MapFlags MapFlags { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.MapFlags)__p.bb.Get(o + __p.bb_pos) : 0; } }
   public N2S.FileFormat.TileData? Tiles(int j) { int o = __p.__offset(6); return o != 0 ? (N2S.FileFormat.TileData?)(new N2S.FileFormat.TileData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
   public int TilesLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
 
+  public static Offset<N2S.FileFormat.TilemapData> CreateTilemapData(FlatBufferBuilder builder,
+      N2S.FileFormat.MapFlags map_flags = 0,
+      VectorOffset tilesOffset = default(VectorOffset)) {
+    builder.StartTable(2);
+    TilemapData.AddTiles(builder, tilesOffset);
+    TilemapData.AddMapFlags(builder, map_flags);
+    return TilemapData.EndTilemapData(builder);
+  }
+
   public static void StartTilemapData(FlatBufferBuilder builder) { builder.StartTable(2); }
-  public static void AddPos(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2> posOffset) { builder.AddStruct(0, posOffset.Value, 0); }
+  public static void AddMapFlags(FlatBufferBuilder builder, N2S.FileFormat.MapFlags mapFlags) { builder.AddByte(0, (byte)mapFlags, 0); }
   public static void AddTiles(FlatBufferBuilder builder, VectorOffset tilesOffset) { builder.AddOffset(1, tilesOffset.Value, 0); }
   public static VectorOffset CreateTilesVector(FlatBufferBuilder builder, Offset<N2S.FileFormat.TileData>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateTilesVectorBlock(FlatBufferBuilder builder, Offset<N2S.FileFormat.TileData>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
@@ -109,7 +208,7 @@ public struct TilemapData : IFlatbufferObject
     return _o;
   }
   public void UnPackTo(TilemapDataT _o) {
-    _o.Pos = this.Pos.HasValue ? this.Pos.Value.UnPack() : null;
+    _o.MapFlags = this.MapFlags;
     _o.Tiles = new List<N2S.FileFormat.TileDataT>();
     for (var _j = 0; _j < this.TilesLength; ++_j) {_o.Tiles.Add(this.Tiles(_j).HasValue ? this.Tiles(_j).Value.UnPack() : null);}
   }
@@ -121,20 +220,20 @@ public struct TilemapData : IFlatbufferObject
       for (var _j = 0; _j < __tiles.Length; ++_j) { __tiles[_j] = N2S.FileFormat.TileData.Pack(builder, _o.Tiles[_j]); }
       _tiles = CreateTilesVector(builder, __tiles);
     }
-    StartTilemapData(builder);
-    AddPos(builder, N2S.FileFormat.Vec2.Pack(builder, _o.Pos));
-    AddTiles(builder, _tiles);
-    return EndTilemapData(builder);
+    return CreateTilemapData(
+      builder,
+      _o.MapFlags,
+      _tiles);
   }
 };
 
 public class TilemapDataT
 {
-  public N2S.FileFormat.Vec2T Pos { get; set; }
+  public N2S.FileFormat.MapFlags MapFlags { get; set; }
   public List<N2S.FileFormat.TileDataT> Tiles { get; set; }
 
   public TilemapDataT() {
-    this.Pos = new N2S.FileFormat.Vec2T();
+    this.MapFlags = 0;
     this.Tiles = null;
   }
 }
@@ -149,12 +248,12 @@ public struct EntityData : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public EntityData __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public N2S.FileFormat.Vec2? Pos { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.Vec2?)(new N2S.FileFormat.Vec2()).__assign(o + __p.bb_pos, __p.bb) : null; } }
+  public N2S.FileFormat.Vec2Int? Pos { get { int o = __p.__offset(4); return o != 0 ? (N2S.FileFormat.Vec2Int?)(new N2S.FileFormat.Vec2Int()).__assign(o + __p.bb_pos, __p.bb) : null; } }
   public N2S.FileFormat.EntityType Type { get { int o = __p.__offset(6); return o != 0 ? (N2S.FileFormat.EntityType)__p.bb.GetShort(o + __p.bb_pos) : N2S.FileFormat.EntityType.Checkpoint; } }
   public ushort Id { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetUshort(o + __p.bb_pos) : (ushort)0; } }
 
   public static void StartEntityData(FlatBufferBuilder builder) { builder.StartTable(3); }
-  public static void AddPos(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2> posOffset) { builder.AddStruct(0, posOffset.Value, 0); }
+  public static void AddPos(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2Int> posOffset) { builder.AddStruct(0, posOffset.Value, 0); }
   public static void AddType(FlatBufferBuilder builder, N2S.FileFormat.EntityType type) { builder.AddShort(1, (short)type, 0); }
   public static void AddId(FlatBufferBuilder builder, ushort id) { builder.AddUshort(2, id, 0); }
   public static Offset<N2S.FileFormat.EntityData> EndEntityData(FlatBufferBuilder builder) {
@@ -174,7 +273,7 @@ public struct EntityData : IFlatbufferObject
   public static Offset<N2S.FileFormat.EntityData> Pack(FlatBufferBuilder builder, EntityDataT _o) {
     if (_o == null) return default(Offset<N2S.FileFormat.EntityData>);
     StartEntityData(builder);
-    AddPos(builder, N2S.FileFormat.Vec2.Pack(builder, _o.Pos));
+    AddPos(builder, N2S.FileFormat.Vec2Int.Pack(builder, _o.Pos));
     AddType(builder, _o.Type);
     AddId(builder, _o.Id);
     return EndEntityData(builder);
@@ -183,12 +282,12 @@ public struct EntityData : IFlatbufferObject
 
 public class EntityDataT
 {
-  public N2S.FileFormat.Vec2T Pos { get; set; }
+  public N2S.FileFormat.Vec2IntT Pos { get; set; }
   public N2S.FileFormat.EntityType Type { get; set; }
   public ushort Id { get; set; }
 
   public EntityDataT() {
-    this.Pos = new N2S.FileFormat.Vec2T();
+    this.Pos = new N2S.FileFormat.Vec2IntT();
     this.Type = N2S.FileFormat.EntityType.Checkpoint;
     this.Id = 0;
   }
@@ -218,16 +317,23 @@ public struct MapSettings : IFlatbufferObject
   public ArraySegment<byte>? GetAuthorNameBytes() { return __p.__vector_as_arraysegment(6); }
 #endif
   public byte[] GetAuthorNameArray() { return __p.__vector_as_array<byte>(6); }
-  public float CellSize { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetFloat(o + __p.bb_pos) : (float)0.0f; } }
-  public ushort ChunkSize { get { int o = __p.__offset(10); return o != 0 ? __p.bb.GetUshort(o + __p.bb_pos) : (ushort)0; } }
-  public N2S.FileFormat.Vec2? SegmentSize { get { int o = __p.__offset(12); return o != 0 ? (N2S.FileFormat.Vec2?)(new N2S.FileFormat.Vec2()).__assign(o + __p.bb_pos, __p.bb) : null; } }
+  public float ChunkSize { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetFloat(o + __p.bb_pos) : (float)0.0f; } }
 
-  public static void StartMapSettings(FlatBufferBuilder builder) { builder.StartTable(5); }
+  public static Offset<N2S.FileFormat.MapSettings> CreateMapSettings(FlatBufferBuilder builder,
+      StringOffset map_nameOffset = default(StringOffset),
+      StringOffset author_nameOffset = default(StringOffset),
+      float chunk_size = 0.0f) {
+    builder.StartTable(3);
+    MapSettings.AddChunkSize(builder, chunk_size);
+    MapSettings.AddAuthorName(builder, author_nameOffset);
+    MapSettings.AddMapName(builder, map_nameOffset);
+    return MapSettings.EndMapSettings(builder);
+  }
+
+  public static void StartMapSettings(FlatBufferBuilder builder) { builder.StartTable(3); }
   public static void AddMapName(FlatBufferBuilder builder, StringOffset mapNameOffset) { builder.AddOffset(0, mapNameOffset.Value, 0); }
   public static void AddAuthorName(FlatBufferBuilder builder, StringOffset authorNameOffset) { builder.AddOffset(1, authorNameOffset.Value, 0); }
-  public static void AddCellSize(FlatBufferBuilder builder, float cellSize) { builder.AddFloat(2, cellSize, 0.0f); }
-  public static void AddChunkSize(FlatBufferBuilder builder, ushort chunkSize) { builder.AddUshort(3, chunkSize, 0); }
-  public static void AddSegmentSize(FlatBufferBuilder builder, Offset<N2S.FileFormat.Vec2> segmentSizeOffset) { builder.AddStruct(4, segmentSizeOffset.Value, 0); }
+  public static void AddChunkSize(FlatBufferBuilder builder, float chunkSize) { builder.AddFloat(2, chunkSize, 0.0f); }
   public static Offset<N2S.FileFormat.MapSettings> EndMapSettings(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<N2S.FileFormat.MapSettings>(o);
@@ -240,21 +346,17 @@ public struct MapSettings : IFlatbufferObject
   public void UnPackTo(MapSettingsT _o) {
     _o.MapName = this.MapName;
     _o.AuthorName = this.AuthorName;
-    _o.CellSize = this.CellSize;
     _o.ChunkSize = this.ChunkSize;
-    _o.SegmentSize = this.SegmentSize.HasValue ? this.SegmentSize.Value.UnPack() : null;
   }
   public static Offset<N2S.FileFormat.MapSettings> Pack(FlatBufferBuilder builder, MapSettingsT _o) {
     if (_o == null) return default(Offset<N2S.FileFormat.MapSettings>);
     var _map_name = _o.MapName == null ? default(StringOffset) : builder.CreateString(_o.MapName);
     var _author_name = _o.AuthorName == null ? default(StringOffset) : builder.CreateString(_o.AuthorName);
-    StartMapSettings(builder);
-    AddMapName(builder, _map_name);
-    AddAuthorName(builder, _author_name);
-    AddCellSize(builder, _o.CellSize);
-    AddChunkSize(builder, _o.ChunkSize);
-    AddSegmentSize(builder, N2S.FileFormat.Vec2.Pack(builder, _o.SegmentSize));
-    return EndMapSettings(builder);
+    return CreateMapSettings(
+      builder,
+      _map_name,
+      _author_name,
+      _o.ChunkSize);
   }
 };
 
@@ -262,16 +364,12 @@ public class MapSettingsT
 {
   public string MapName { get; set; }
   public string AuthorName { get; set; }
-  public float CellSize { get; set; }
-  public ushort ChunkSize { get; set; }
-  public N2S.FileFormat.Vec2T SegmentSize { get; set; }
+  public float ChunkSize { get; set; }
 
   public MapSettingsT() {
     this.MapName = null;
     this.AuthorName = null;
-    this.CellSize = 0.0f;
-    this.ChunkSize = 0;
-    this.SegmentSize = new N2S.FileFormat.Vec2T();
+    this.ChunkSize = 0.0f;
   }
 }
 
@@ -294,40 +392,32 @@ public struct Map : IFlatbufferObject
 #endif
   public byte[] GetGameVersionArray() { return __p.__vector_as_array<byte>(4); }
   public N2S.FileFormat.MapSettings? Settings { get { int o = __p.__offset(6); return o != 0 ? (N2S.FileFormat.MapSettings?)(new N2S.FileFormat.MapSettings()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
-  public N2S.FileFormat.TilemapData? BaseLayer(int j) { int o = __p.__offset(8); return o != 0 ? (N2S.FileFormat.TilemapData?)(new N2S.FileFormat.TilemapData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int BaseLayerLength { get { int o = __p.__offset(8); return o != 0 ? __p.__vector_len(o) : 0; } }
-  public N2S.FileFormat.TilemapData? DetailLayer(int j) { int o = __p.__offset(10); return o != 0 ? (N2S.FileFormat.TilemapData?)(new N2S.FileFormat.TilemapData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int DetailLayerLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
-  public N2S.FileFormat.EntityData? EntityLayer(int j) { int o = __p.__offset(12); return o != 0 ? (N2S.FileFormat.EntityData?)(new N2S.FileFormat.EntityData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int EntityLayerLength { get { int o = __p.__offset(12); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public N2S.FileFormat.TilemapData? TileLayers(int j) { int o = __p.__offset(8); return o != 0 ? (N2S.FileFormat.TilemapData?)(new N2S.FileFormat.TilemapData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int TileLayersLength { get { int o = __p.__offset(8); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public N2S.FileFormat.EntityData? EntityLayer(int j) { int o = __p.__offset(10); return o != 0 ? (N2S.FileFormat.EntityData?)(new N2S.FileFormat.EntityData()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int EntityLayerLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
 
   public static Offset<N2S.FileFormat.Map> CreateMap(FlatBufferBuilder builder,
       StringOffset game_versionOffset = default(StringOffset),
       Offset<N2S.FileFormat.MapSettings> settingsOffset = default(Offset<N2S.FileFormat.MapSettings>),
-      VectorOffset base_layerOffset = default(VectorOffset),
-      VectorOffset detail_layerOffset = default(VectorOffset),
+      VectorOffset tile_layersOffset = default(VectorOffset),
       VectorOffset entity_layerOffset = default(VectorOffset)) {
-    builder.StartTable(5);
+    builder.StartTable(4);
     Map.AddEntityLayer(builder, entity_layerOffset);
-    Map.AddDetailLayer(builder, detail_layerOffset);
-    Map.AddBaseLayer(builder, base_layerOffset);
+    Map.AddTileLayers(builder, tile_layersOffset);
     Map.AddSettings(builder, settingsOffset);
     Map.AddGameVersion(builder, game_versionOffset);
     return Map.EndMap(builder);
   }
 
-  public static void StartMap(FlatBufferBuilder builder) { builder.StartTable(5); }
+  public static void StartMap(FlatBufferBuilder builder) { builder.StartTable(4); }
   public static void AddGameVersion(FlatBufferBuilder builder, StringOffset gameVersionOffset) { builder.AddOffset(0, gameVersionOffset.Value, 0); }
   public static void AddSettings(FlatBufferBuilder builder, Offset<N2S.FileFormat.MapSettings> settingsOffset) { builder.AddOffset(1, settingsOffset.Value, 0); }
-  public static void AddBaseLayer(FlatBufferBuilder builder, VectorOffset baseLayerOffset) { builder.AddOffset(2, baseLayerOffset.Value, 0); }
-  public static VectorOffset CreateBaseLayerVector(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static VectorOffset CreateBaseLayerVectorBlock(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
-  public static void StartBaseLayerVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static void AddDetailLayer(FlatBufferBuilder builder, VectorOffset detailLayerOffset) { builder.AddOffset(3, detailLayerOffset.Value, 0); }
-  public static VectorOffset CreateDetailLayerVector(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static VectorOffset CreateDetailLayerVectorBlock(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
-  public static void StartDetailLayerVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static void AddEntityLayer(FlatBufferBuilder builder, VectorOffset entityLayerOffset) { builder.AddOffset(4, entityLayerOffset.Value, 0); }
+  public static void AddTileLayers(FlatBufferBuilder builder, VectorOffset tileLayersOffset) { builder.AddOffset(2, tileLayersOffset.Value, 0); }
+  public static VectorOffset CreateTileLayersVector(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
+  public static VectorOffset CreateTileLayersVectorBlock(FlatBufferBuilder builder, Offset<N2S.FileFormat.TilemapData>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartTileLayersVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddEntityLayer(FlatBufferBuilder builder, VectorOffset entityLayerOffset) { builder.AddOffset(3, entityLayerOffset.Value, 0); }
   public static VectorOffset CreateEntityLayerVector(FlatBufferBuilder builder, Offset<N2S.FileFormat.EntityData>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateEntityLayerVectorBlock(FlatBufferBuilder builder, Offset<N2S.FileFormat.EntityData>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
   public static void StartEntityLayerVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
@@ -345,10 +435,8 @@ public struct Map : IFlatbufferObject
   public void UnPackTo(MapT _o) {
     _o.GameVersion = this.GameVersion;
     _o.Settings = this.Settings.HasValue ? this.Settings.Value.UnPack() : null;
-    _o.BaseLayer = new List<N2S.FileFormat.TilemapDataT>();
-    for (var _j = 0; _j < this.BaseLayerLength; ++_j) {_o.BaseLayer.Add(this.BaseLayer(_j).HasValue ? this.BaseLayer(_j).Value.UnPack() : null);}
-    _o.DetailLayer = new List<N2S.FileFormat.TilemapDataT>();
-    for (var _j = 0; _j < this.DetailLayerLength; ++_j) {_o.DetailLayer.Add(this.DetailLayer(_j).HasValue ? this.DetailLayer(_j).Value.UnPack() : null);}
+    _o.TileLayers = new List<N2S.FileFormat.TilemapDataT>();
+    for (var _j = 0; _j < this.TileLayersLength; ++_j) {_o.TileLayers.Add(this.TileLayers(_j).HasValue ? this.TileLayers(_j).Value.UnPack() : null);}
     _o.EntityLayer = new List<N2S.FileFormat.EntityDataT>();
     for (var _j = 0; _j < this.EntityLayerLength; ++_j) {_o.EntityLayer.Add(this.EntityLayer(_j).HasValue ? this.EntityLayer(_j).Value.UnPack() : null);}
   }
@@ -356,17 +444,11 @@ public struct Map : IFlatbufferObject
     if (_o == null) return default(Offset<N2S.FileFormat.Map>);
     var _game_version = _o.GameVersion == null ? default(StringOffset) : builder.CreateString(_o.GameVersion);
     var _settings = _o.Settings == null ? default(Offset<N2S.FileFormat.MapSettings>) : N2S.FileFormat.MapSettings.Pack(builder, _o.Settings);
-    var _base_layer = default(VectorOffset);
-    if (_o.BaseLayer != null) {
-      var __base_layer = new Offset<N2S.FileFormat.TilemapData>[_o.BaseLayer.Count];
-      for (var _j = 0; _j < __base_layer.Length; ++_j) { __base_layer[_j] = N2S.FileFormat.TilemapData.Pack(builder, _o.BaseLayer[_j]); }
-      _base_layer = CreateBaseLayerVector(builder, __base_layer);
-    }
-    var _detail_layer = default(VectorOffset);
-    if (_o.DetailLayer != null) {
-      var __detail_layer = new Offset<N2S.FileFormat.TilemapData>[_o.DetailLayer.Count];
-      for (var _j = 0; _j < __detail_layer.Length; ++_j) { __detail_layer[_j] = N2S.FileFormat.TilemapData.Pack(builder, _o.DetailLayer[_j]); }
-      _detail_layer = CreateDetailLayerVector(builder, __detail_layer);
+    var _tile_layers = default(VectorOffset);
+    if (_o.TileLayers != null) {
+      var __tile_layers = new Offset<N2S.FileFormat.TilemapData>[_o.TileLayers.Count];
+      for (var _j = 0; _j < __tile_layers.Length; ++_j) { __tile_layers[_j] = N2S.FileFormat.TilemapData.Pack(builder, _o.TileLayers[_j]); }
+      _tile_layers = CreateTileLayersVector(builder, __tile_layers);
     }
     var _entity_layer = default(VectorOffset);
     if (_o.EntityLayer != null) {
@@ -378,8 +460,7 @@ public struct Map : IFlatbufferObject
       builder,
       _game_version,
       _settings,
-      _base_layer,
-      _detail_layer,
+      _tile_layers,
       _entity_layer);
   }
 };
@@ -388,15 +469,13 @@ public class MapT
 {
   public string GameVersion { get; set; }
   public N2S.FileFormat.MapSettingsT Settings { get; set; }
-  public List<N2S.FileFormat.TilemapDataT> BaseLayer { get; set; }
-  public List<N2S.FileFormat.TilemapDataT> DetailLayer { get; set; }
+  public List<N2S.FileFormat.TilemapDataT> TileLayers { get; set; }
   public List<N2S.FileFormat.EntityDataT> EntityLayer { get; set; }
 
   public MapT() {
     this.GameVersion = null;
     this.Settings = null;
-    this.BaseLayer = null;
-    this.DetailLayer = null;
+    this.TileLayers = null;
     this.EntityLayer = null;
   }
   public static MapT DeserializeFromBinary(byte[] fbBuffer) {

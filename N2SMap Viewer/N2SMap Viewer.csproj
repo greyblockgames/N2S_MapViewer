@@ -54,7 +54,6 @@
         <Compile Include="Commands\CompileCommand.cs" />
         <Compile Include="Commands\ExtractCommand.cs" />
         <Compile Include="Commands\HelpCommand.cs" />
-        <Compile Include="FlatBuffer\DataTypes.cs" />
         <Compile Include="FlatBuffer\SaveSchema.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
